@@ -1,0 +1,15 @@
+.git
+.github
+.husky
+deploy/terraform
+deploy/k8s
+node_modules
+.next
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.env*.local
+.env
+.prettierrc
+commitlint.config.js
+README.md
