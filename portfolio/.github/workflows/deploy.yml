@@ -1,0 +1,110 @@
+name: "CD - Deploy to AWS ECS & Terraform Rollout"
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# OpenID Connect (OIDC) permissions for passwordless AWS authentication
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REPOSITORY: portfolio-sys
+  ECS_CLUSTER: portfolio-sys-cluster
+  ECS_SERVICE: portfolio-sys-service
+  TF_WORKING_DIR: deploy/terraform
+
+jobs:
+  terraform-plan-apply:
+    name: "Provision Infrastructure (Terraform)"
+    runs-on: ubuntu-latest
+    outputs:
+      ecr_uri: ${{ steps.tf_outputs.outputs.ecr_uri }}
+    steps:
+      - name: "Checkout Repository"
+        uses: actions/checkout@v4
+
+      - name: "Authenticate to AWS via OIDC"
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_OIDC_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: "Setup Terraform"
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.7.5
+
+      - name: "Terraform Init & Validate"
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: |
+          terraform init
+          terraform validate
+
+      - name: "Terraform Apply (Zero-Drift Execution)"
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: |
+          terraform apply -auto-approve -var="container_image=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:${{ github.sha }}"
+
+  build-and-push-ecr:
+    name: "Build & Push Immutable Docker Image"
+    needs: [terraform-plan-apply]
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout Repository"
+        uses: actions/checkout@v4
+
+      - name: "Authenticate to AWS via OIDC"
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_OIDC_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: "Login to Amazon ECR"
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: "Set up Docker Buildx"
+        uses: docker/setup-buildx-action@v3
+
+      - name: "Build & Push Production Image to ECR"
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: deploy/docker/Dockerfile
+          push: true
+          tags: |
+            ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
+            ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy-ecs-fargate:
+    name: "Rolling Deployment to ECS Fargate"
+    needs: [build-and-push-ecr]
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Authenticate to AWS via OIDC"
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_OIDC_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: "Trigger ECS Fargate Force Deployment"
+        run: |
+          aws ecs update-service \
+            --cluster ${{ env.ECS_CLUSTER }} \
+            --service ${{ env.ECS_SERVICE }} \
+            --force-new-deployment \
+            --region ${{ env.AWS_REGION }}
+
+      - name: "Verify Deployment Rollout Status"
+        run: |
+          aws ecs wait services-stable \
+            --cluster ${{ env.ECS_CLUSTER }} \
+            --services ${{ env.ECS_SERVICE }} \
+            --region ${{ env.AWS_REGION }}
+          echo "ECS Service rollout successfully completed and stable."
