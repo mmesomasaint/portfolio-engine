@@ -1,0 +1,33 @@
+---
+title: "ReceiptLens Engine"
+slug: "receiptlens-engine"
+tagline: "Resilient document ingestion and heuristic data extraction pipeline."
+role: "Backend & Systems Engineer"
+domain: "Backend"
+featured: true
+githubUrl: "https://github.com/mmesomasaint/receiptlens-engine"
+stack: ["Python", "FastAPI", "Pydantic", "OpenCV", "Tesseract/OCR", "PostgreSQL", "Docker"]
+metrics:
+  - label: "Parsing Accuracy"
+    value: "97.8%"
+    context: "Multi-pass image normalization"
+  - label: "Worker Concurrency"
+    value: "50 Tasks/Pod"
+    context: "Async image buffer pipeline"
+  - label: "API Availability"
+    value: "99.95%"
+    context: "Circuit-breaker guarded workers"
+architectureHighlights:
+  - "Pipelined image preprocessing (adaptive thresholding, deskewing) before OCR ingestion."
+  - "Structured JSON schema extraction enforced via Pydantic validators with graceful fallback parsing."
+  - "Decoupled extraction workers protected by exponential backoff and dead-letter queues (DLQ)."
+securityPractices:
+  - "Zero disk persistence of raw unencrypted PII image files during parsing lifecycles."
+  - "MIME-type binary signature validation to prevent malicious payload uploads disguised as image files."
+---
+
+### Problem & System Constraints
+Unstructured receipt images have high variance in orientation, lighting, and layout, making naive OCR slow, error-prone, and memory-intensive.
+
+### Architectural Solution
+Constructed an asynchronous extraction pipeline that normalizes raw image streams, applies parallel heuristic OCR parsing, and enforces structured relational schema outputs with strict field-level validation.
