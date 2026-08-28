@@ -3,6 +3,7 @@ import { Hero } from "@/components/sections/hero";
 import { TechMatrix } from "@/components/sections/tech-matrix";
 import { ArchitecturePhilosophy } from "@/components/sections/architecture-philosophy";
 import { ExperienceTimeline } from "@/components/sections/experience-timeline";
+import { FeaturedProjects } from "@/components/sections/featured-projects";
 
 export default function HomePage() {
   return (
@@ -11,6 +12,7 @@ export default function HomePage() {
       <TechMatrix />
       <ArchitecturePhilosophy />
       <ExperienceTimeline />
+      <FeaturedProjects />
     </main>
   );
 }
