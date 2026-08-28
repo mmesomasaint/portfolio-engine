@@ -1,0 +1,33 @@
+---
+title: "AutoInvoiceGenerator"
+slug: "autoinvoicegenerator"
+tagline: "Asynchronous high-volume document rendering microservice with isolated headless pipelines."
+role: "Backend & Systems Architect"
+domain: "Distributed Systems"
+featured: true
+githubUrl: "https://github.com/mmesomasaint/autoinvoicegenerator"
+stack: ["FastAPI", "Python", "PostgreSQL", "Jinja2", "WeasyPrint", "Docker", "Redis"]
+metrics:
+  - label: "Throughput"
+    value: "250+ docs/sec"
+    context: "Parallelized headless rendering"
+  - label: "P99 Latency"
+    value: "<180ms"
+    context: "Template compilation & byte streaming"
+  - label: "Memory Footprint"
+    value: "-40%"
+    context: "Process-isolated worker lifecycle"
+architectureHighlights:
+  - "Decoupled rendering queue using Redis to prevent heavy PDF compilation from blocking the core ASGI event loop."
+  - "Stateless Jinja2 template caching layer with deterministic cryptographic hash validation."
+  - "Containerized headless rendering engine isolated in a non-root environment with strict memory/CPU cgroup limits."
+securityPractices:
+  - "Sanitized dynamic HTML inputs to eliminate Server-Side Template Injection (SSTI) and Local File Inclusion (LFI)."
+  - "Short-lived signed S3 URLs for generated artifacts; zero permanent storage of raw customer billing details on disk."
+---
+
+### Problem & System Constraints
+Generating pixel-perfect PDF financial records synchronously in standard web workers introduces thread starvation and memory leaks due to native rendering libraries.
+
+### Architectural Solution
+AutoInvoiceGenerator separates template ingestion from PDF compilation. Inbound requests are validated via Pydantic, stored in PostgreSQL, and queued into background asynchronous task pools. The compiled PDF streams directly to client storage buffers or encrypted object stores.
