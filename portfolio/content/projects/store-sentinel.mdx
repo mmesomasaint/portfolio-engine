@@ -1,0 +1,33 @@
+---
+title: "Store Sentinel"
+slug: "store-sentinel"
+tagline: "Autonomous health monitoring, synthetic probing, and anomaly alerting for storefronts."
+role: "DevOps & Cloud Engineer"
+domain: "DevOps"
+featured: true
+githubUrl: "https://github.com/mmesomasaint/store-sentinel"
+stack: ["Go / Python", "Docker", "Prometheus", "Grafana", "PostgreSQL", "GitHub Actions"]
+metrics:
+  - label: "Detection Time"
+    value: "<30s"
+    context: "Automated probe sweep intervals"
+  - label: "False-Positive Rate"
+    value: "<0.1%"
+    context: "Multi-region synthetic quorum"
+  - label: "Uptime Monitored"
+    value: "99.99%"
+    context: "E-commerce checkout pipelines"
+architectureHighlights:
+  - "Distributed synthetic probe nodes testing multi-step checkout flows and database latency."
+  - "Multi-region probe consensus to eliminate false-positive incident alerts caused by single-node network blips."
+  - "Prometheus metric exporter providing granular time-series data for MTTR, uptime, and HTTP error distributions."
+securityPractices:
+  - "Encrypted credential vaults for synthetic user logins."
+  - "IP-whitelisted agent egress and hardened container execution policies."
+---
+
+### Problem & System Constraints
+Passive server pinging fails to detect silent e-commerce failures like broken checkout scripts, third-party payment gateway outages, and database lockups.
+
+### Architectural Solution
+Store Sentinel executes periodic active synthetic user flows against critical purchase funnels, calculates latency and error budgets, and routes high-priority alerts when error thresholds are breached.
