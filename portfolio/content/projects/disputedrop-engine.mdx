@@ -1,0 +1,33 @@
+---
+title: "DisputeDrop Engine"
+slug: "disputedrop-engine"
+tagline: "High-integrity chargeback automation and idempotent financial webhook processor."
+role: "Backend & Security Engineer"
+domain: "Security"
+featured: true
+githubUrl: "https://github.com/mmesomasaint/disputedrop-engine"
+stack: ["FastAPI", "Python", "PostgreSQL", "Redis", "HMAC-SHA256", "Docker", "Pytest"]
+metrics:
+  - label: "Processing Guarantee"
+    value: "100% Exactly-Once"
+    context: "Distributed Redis idempotency locks"
+  - label: "Webhook Ingestion"
+    value: "<45ms"
+    context: "Signature verification + async dispatch"
+  - label: "Audit Integrity"
+    value: "Immutable"
+    context: "Append-only ledger event stream"
+architectureHighlights:
+  - "Distributed idempotency keys using atomic Redis SETNX operations to prevent duplicate payment disputes."
+  - "Strict HMAC-SHA256 constant-time signature verification on inbound gateway webhooks."
+  - "Immutable audit trail with append-only PostgreSQL ledgering for forensic compliance."
+securityPractices:
+  - "Mitigated timing attack vectors via constant-time token comparisons."
+  - "Least-privilege database role mapping separating dispute submission workers from financial settlement data."
+---
+
+### Problem & System Constraints
+Payment dispute events arrive non-deterministically across payment gateways. Duplicate webhook delivery can cause duplicate dispute filings, resulting in severe gateway penalty fees.
+
+### Architectural Solution
+Engineered an ingestion engine featuring strict HMAC verification, atomic idempotency caching, and an asynchronous worker pipeline that validates, aggregates evidence, and submits responses within tight gateway SLA windows.
