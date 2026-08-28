@@ -1,0 +1,33 @@
+---
+title: "Alert Bridge"
+slug: "alert-bridge"
+tagline: "Fault-tolerant webhook router, alert deduplication, and distributed dispatch engine."
+role: "Cloud & Reliability Engineer"
+domain: "Cloud"
+featured: true
+githubUrl: "https://github.com/mmesomasaint/alert-bridge"
+stack: ["Python", "FastAPI", "Redis", "PostgreSQL", "Telegram API", "Discord Webhooks", "Docker"]
+metrics:
+  - label: "Deduplication"
+    value: "100% Windowed"
+    context: "Dynamic sliding-window hash filter"
+  - label: "Dispatch Latency"
+    value: "<60ms"
+    context: "Parallel async fan-out"
+  - label: "Retry Backoff"
+    value: "Exponential"
+    context: "Jitter-protected delivery retry"
+architectureHighlights:
+  - "Sliding-window hash deduplication in Redis to prevent alert storms from overwhelming incident response teams."
+  - "Asynchronous fan-out architecture routing unified alerts to Slack, Discord, Telegram, and PagerDuty."
+  - "Token-bucket rate limiter per outgoing provider channel to strictly respect downstream platform API limits."
+securityPractices:
+  - "Inbound token authentication and encrypted environment variable secrets."
+  - "Strict egress payload sanitization stripping sensitive internal stack traces before dispatch."
+---
+
+### Problem & System Constraints
+During cascading outages, microservices generate thousands of identical alert webhooks simultaneously, leading to rate limiting and alert fatigue.
+
+### Architectural Solution
+Alert Bridge acts as an intelligent intermediary. It aggregates, deduplicates, transforms, and dispatches incident webhooks across multiple notification channels with rate-limiting and jittered exponential retries.
