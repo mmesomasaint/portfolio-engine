@@ -18,7 +18,7 @@ export function Header() {
           <div className="flex h-7 w-7 items-center justify-center rounded border border-zinc-800 bg-zinc-900 text-emerald-400">
             <Terminal className="h-4 w-4" />
           </div>
-          <span>mmesoma.sys</span>
+          <span>mmesoma.saint</span>
         </Link>
 
         {/* Desktop Navigation Links */}
