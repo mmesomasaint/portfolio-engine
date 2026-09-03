@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { techStackMatrix } from "@/config/skills";
 import { 
