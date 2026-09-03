@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { engineeringPrinciples } from "@/config/philosophy";
 import { 
