@@ -1,7 +1,15 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getProjectBySlug, getAllProjectSlugs } from "@/lib/mdx";
-import { ArrowLeft, Cpu, ExternalLink, ShieldAlert, CheckCircle2, Zap } from "lucide-react";
+import { MDXRemote } from "next-mdx-remote/rsc";
+import { 
+  ArrowLeft, 
+  Cpu, 
+  ExternalLink, 
+  ShieldAlert, 
+  CheckCircle2, 
+  Zap 
+} from "lucide-react";
 
 interface ProjectPageProps {
   params: { slug: string };
@@ -21,6 +29,52 @@ export async function generateMetadata({ params }: ProjectPageProps) {
     description: project.meta.tagline,
   };
 }
+
+// Custom typography components matching the systems aesthetic
+const mdxComponents = {
+  h2: (props: React.HTMLAttributes<HTMLHeadingElement>) => (
+    <h2 
+      className="text-xl font-bold tracking-tight text-zinc-100 mt-10 mb-4 pb-2 border-b border-zinc-800/80 font-mono flex items-center gap-2" 
+      {...props} 
+    />
+  ),
+  h3: (props: React.HTMLAttributes<HTMLHeadingElement>) => (
+    <h3 
+      className="text-base font-semibold text-emerald-400 mt-6 mb-3 font-mono uppercase tracking-wide" 
+      {...props} 
+    />
+  ),
+  p: (props: React.HTMLAttributes<HTMLParagraphElement>) => (
+    <p className="text-sm leading-relaxed text-zinc-300 my-3 font-sans" {...props} />
+  ),
+  ul: (props: React.HTMLAttributes<HTMLUListElement>) => (
+    <ul className="my-3 ml-4 list-disc space-y-2 text-sm text-zinc-300 marker:text-emerald-500" {...props} />
+  ),
+  ol: (props: React.HTMLAttributes<HTMLOListElement>) => (
+    <ol className="my-3 ml-4 list-decimal space-y-2 text-sm text-zinc-300 marker:text-emerald-500" {...props} />
+  ),
+  li: (props: React.HTMLAttributes<HTMLLIElement>) => (
+    <li className="leading-relaxed pl-1" {...props} />
+  ),
+  code: (props: React.HTMLAttributes<HTMLElement>) => (
+    <code 
+      className="rounded bg-zinc-800/80 px-1.5 py-0.5 font-mono text-xs text-emerald-300 border border-zinc-700/50" 
+      {...props} 
+    />
+  ),
+  pre: (props: React.HTMLAttributes<HTMLPreElement>) => (
+    <pre 
+      className="my-4 overflow-x-auto rounded-lg border border-zinc-800 bg-zinc-900/90 p-4 font-mono text-xs text-zinc-200" 
+      {...props} 
+    />
+  ),
+  blockquote: (props: React.HTMLAttributes<HTMLQuoteElement>) => (
+    <blockquote 
+      className="my-4 border-l-2 border-emerald-500/80 bg-zinc-900/30 py-2 pl-4 italic text-zinc-400 text-sm" 
+      {...props} 
+    />
+  ),
+};
 
 export default function ProjectRFCPage({ params }: ProjectPageProps) {
   const project = getProjectBySlug(params.slug);
@@ -118,13 +172,9 @@ export default function ProjectRFCPage({ params }: ProjectPageProps) {
         </div>
       </div>
 
-      {/* MDX Raw Content Body */}
-      <div className="border-t border-zinc-800 pt-8">
-        <div className="prose prose-invert max-w-none text-zinc-300 text-sm leading-relaxed space-y-6">
-          <pre className="p-4 rounded-lg bg-zinc-900/80 border border-zinc-800 font-mono text-xs text-zinc-300 whitespace-pre-wrap">
-            {content}
-          </pre>
-        </div>
+      {/* Rendered MDX Content */}
+      <div className="border-t border-zinc-800/80 pt-8">
+        <MDXRemote source={content} components={mdxComponents} />
       </div>
     </article>
   );
