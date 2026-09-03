@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { careerTimeline } from "@/config/experience";
 import { Briefcase, Calendar, MapPin, CheckCircle, GitCommit, Layers } from "lucide-react";
