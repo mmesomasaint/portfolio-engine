@@ -11,13 +11,21 @@ import {
 } from "lucide-react";
 
 // Dynamic Icon Dispatcher
-const iconMap = {
-  Server: Server,
-  Cloud: Cloud,
-  Database: Database,
-  Shield: Shield,
-  Activity: Activity,
-};
+function renderCategoryIcon(iconName: string) {
+  switch (iconName) {
+    case "Cloud":
+      return <Cloud className="h-5 w-5" />;
+    case "Database":
+      return <Database className="h-5 w-5" />;
+    case "Shield":
+      return <Shield className="h-5 w-5" />;
+    case "Activity":
+      return <Activity className="h-5 w-5" />;
+    case "Server":
+    default:
+      return <Server className="h-5 w-5" />;
+  }
+}
 
 export function TechMatrix() {
   return (
@@ -45,8 +53,6 @@ export function TechMatrix() {
         {/* Matrix Grid */}
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {techStackMatrix.map((group) => {
-            const Icon = iconMap[group.iconName as keyof typeof iconMap] || Server;
-
             return (
               <div
                 key={group.id}
@@ -56,7 +62,7 @@ export function TechMatrix() {
                   {/* Category Header */}
                   <div className="flex items-center gap-3">
                     <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-zinc-800 bg-zinc-900 text-emerald-400">
-                      <Icon className="h-5 w-5" />
+                      {renderCategoryIcon(group.iconName)}
                     </div>
                     <div>
                       <h3 className="text-base font-semibold text-zinc-100">{group.title}</h3>
