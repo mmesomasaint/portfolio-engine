@@ -11,13 +11,21 @@ import {
   X 
 } from "lucide-react";
 
-const iconMap = {
-  ShieldAlert: ShieldAlert,
-  GitFork: GitFork,
-  Zap: Zap,
-  ActivitySquare: ActivitySquare,
-  Scale: Scale,
-};
+function renderPhilosophyIcon(iconName: string) {
+  switch (iconName) {
+    case "GitFork":
+      return <GitFork className="h-5 w-5" />;
+    case "Zap":
+      return <Zap className="h-5 w-5" />;
+    case "ActivitySquare":
+      return <ActivitySquare className="h-5 w-5" />;
+    case "Scale":
+      return <Scale className="h-5 w-5" />;
+    case "ShieldAlert":
+    default:
+      return <ShieldAlert className="h-5 w-5" />;
+  }
+}
 
 export function ArchitecturePhilosophy() {
   return (
@@ -45,7 +53,6 @@ export function ArchitecturePhilosophy() {
         {/* Pillars Grid */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           {engineeringPrinciples.map((pillar) => {
-            const Icon = iconMap[pillar.iconName as keyof typeof iconMap] || ShieldAlert;
 
             return (
               <div
@@ -57,7 +64,7 @@ export function ArchitecturePhilosophy() {
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
                       <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-zinc-800 bg-zinc-900 text-emerald-400">
-                        <Icon className="h-5 w-5" />
+                        {renderPhilosophyIcon(pillar.iconName)}
                       </div>
                       <div>
                         <span className="font-mono text-[11px] uppercase tracking-wider text-emerald-500">
